@@ -36,4 +36,8 @@ public class Blog extends Timestamped {
         this.username = blogRequestDto.getUsername();
         this.contents = blogRequestDto.getContents();
     }
+
+    public boolean checkPassword(String password){
+        return this.password.equals(password);
+    }
 }

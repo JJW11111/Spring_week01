@@ -18,10 +18,12 @@ public class BlogService {
         this.blogRepository = blogRepository;
     }
 
+
     public List<BlogResponseDto> getBlogs() {
         return blogRepository.findAllByOrderByCreatedAtDesc().stream().map(BlogResponseDto::new).toList();
     }
 
+    @Transactional(readOnly = true)
     public BlogResponseDto getBlogById(Long id) {
         Blog blog = findBlog(id);
         return new BlogResponseDto(blog);
@@ -47,9 +49,13 @@ public class BlogService {
     public Blog updateBlog(Long id, BlogRequestDto blogRequestDto) {
         Blog blog = findBlog(id);
 
-        if(!blog.getPassword().equals(blogRequestDto.getPassword())){
+        if(!blog.checkPassword(blogRequestDto.getPassword())){
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
         }
+
+//        if(!blog.getPassword().equals(blogRequestDto.getPassword())){
+//            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
+//        }
 
         blog.update(blogRequestDto);
 
@@ -60,9 +66,13 @@ public class BlogService {
     public void deleteBlog(Long id, String password) {
         Blog blog = findBlog(id);
 
-        if(!blog.getPassword().equals(password)){
+        if(blog.checkPassword(password)){
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
         }
+
+//        if(!blog.getPassword().equals(password)){
+//            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
+//        }
 
         blogRepository.delete(blog);
     }
